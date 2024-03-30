@@ -1,8 +1,9 @@
 package wallet
 
 import (
-	"github.com/labstack/echo/v4"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -22,6 +23,7 @@ type Err struct {
 }
 
 // WalletHandler
+//
 //	@Summary		Get all wallets
 //	@Description	Get all wallets
 //	@Tags			wallet
