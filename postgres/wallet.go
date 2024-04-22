@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"log"
+	"strconv"
 	"time"
 
 	"github.com/KKGo-Software-engineering/fun-exercise-api/wallet"
@@ -17,8 +17,26 @@ type Wallet struct {
 	CreatedAt  time.Time `postgres:"created_at"`
 }
 
-func (p *Postgres) Wallets() ([]wallet.Wallet, error) {
-	rows, err := p.Db.Query("SELECT * FROM user_wallet")
+func (p *Postgres) Wallets(filter wallet.Filter) ([]wallet.Wallet, error) {
+
+	query := "SELECT * FROM user_wallet WHERE true"
+	paramCount := 1
+	var queryParam []interface{}
+
+	if filter.UserID != 0 {
+		query += " AND user_id = $" + strconv.Itoa(paramCount)
+		queryParam = append(queryParam, filter.UserID)
+		paramCount++
+	}
+
+	if filter.WalletType != "" {
+		query += " AND wallet_type = $" + strconv.Itoa(paramCount)
+		queryParam = append(queryParam, filter.WalletType)
+		paramCount++
+	}
+
+	rows, err := p.Db.Query(query, queryParam...)
+
 	if err != nil {
 		return nil, err
 	}
@@ -46,25 +64,4 @@ func (p *Postgres) Wallets() ([]wallet.Wallet, error) {
 		})
 	}
 	return wallets, nil
-}
-
-func (p *Postgres) WalletById(id int) (Wallet, error) {
-	var wallet Wallet
-	rows, err := p.Db.Query("SELECT * FROM wallet WHERE id = $1", id)
-	if err != nil {
-		return Wallet{}, err
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var w Wallet
-		err = rows.Scan(&w)
-		if err != nil {
-			log.Fatal(err)
-			return w, err
-		}
-		wallet = w
-	}
-
-	return wallet, nil
 }

@@ -25,7 +25,7 @@ definitions:
         example: John's Wallet
         type: string
       wallet_type:
-        example: Create Card
+        example: Credit Card
         type: string
     type: object
 host: localhost:1323
@@ -35,11 +35,44 @@ info:
   title: Wallet API
   version: "1.0"
 paths:
+  /api/v1/users/{id}/wallets:
+    get:
+      consumes:
+      - application/json
+      description: Get all wallets of user
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wallet.Wallet'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wallet.Err'
+      summary: Get user wallets
+      tags:
+      - wallet
   /api/v1/wallets:
     get:
       consumes:
       - application/json
       description: Get all wallets
+      parameters:
+      - description: wallet type
+        enum:
+        - Savings
+        - Credit Card
+        - Crypto Wallet
+        in: query
+        name: wallet_type
+        type: string
       produces:
       - application/json
       responses:
@@ -52,6 +85,56 @@ paths:
           schema:
             $ref: '#/definitions/wallet.Err'
       summary: Get all wallets
+      tags:
+      - wallet
+    patch:
+      consumes:
+      - application/json
+      description: Create wallet
+      parameters:
+      - description: wallet request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/wallet.Wallet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wallet.Wallet'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wallet.Err'
+      summary: Create wallet
+      tags:
+      - wallet
+    post:
+      consumes:
+      - application/json
+      description: Create wallet
+      parameters:
+      - description: wallet request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/wallet.Wallet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/wallet.Wallet'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/wallet.Err'
+      summary: Create wallet
       tags:
       - wallet
 swagger: "2.0"

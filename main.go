@@ -9,10 +9,10 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-//	@title			Wallet API
-//	@version		1.0
-//	@description	Sophisticated Wallet API
-//	@host			localhost:1323
+// @title			Wallet API
+// @version		1.0
+// @description	Sophisticated Wallet API
+// @host			localhost:1323
 func main() {
 	p, err := postgres.New()
 	if err != nil {
@@ -21,7 +21,14 @@ func main() {
 
 	e := echo.New()
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	g := e.Group("/api")
+
 	handler := wallet.New(p)
-	e.GET("/api/v1/wallets", handler.WalletHandler)
+
+	g.GET("/v1/wallets", handler.WalletsHandler)
+	g.GET("/v1/users/:id/wallets", handler.WalletsUserHandler)
+	g.POST("/v1/wallets", handler.CreateUserWalletHandler)
+	g.PATCH("/v1/wallets", handler.UpdateUserWalletHabdler)
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
